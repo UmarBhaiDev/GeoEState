@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>System Configuration</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <style>
+    body {
+      background-color: white;
+      color: #fff;
+    }
+
+    .config-page {
+      width: 90%;
+      margin:  auto;
+      background-color: #33DB4A;
+      padding: 20px;
+      border-radius: 8px;
+    }
+
+    #map {
+      height: 300px;
+      border-radius: 8px;
+    }
+
+    .form-label {
+      font-weight: bold;
+    }
+    .sidebar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 60px;
+      height: 207vh;
+      background: #33DB4A;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-top: 10px;
+      z-index: 1000;
+    }
+
+    .sidebar img {
+      width: 50px;
+      height: 30px;
+      margin-bottom: 20px;
+    }
+
+    .sidebar ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      width: 100%;
+    }
+
+    .sidebar li {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 60px;
+      cursor: pointer;
+    }
+
+    .sidebar i {
+      color: #fff;
+      font-size: 20px;
+      transition: color 0.3s ease;
+    }
+
+    .sidebar i:hover {
+      color: #f0d124;
+    }
+
+    .sidebar .separator {
+      width: 80%;
+      height: 1px;
+      background: #555;
+      margin: 20px 0;
+    }
+
+    .sidebar .logout {
+      margin-top: auto;
+      margin-bottom: 20px;
+    }
+
+  </style>
+</head>
+<body>
+  <div class="sidebar">
+    <img src="../../assests/img/logo-removebg-preview.png" alt="Logo">
+    <ul>
+      <li><i class="fas fa-search" title="Search"></i></li>
+      <li><a href="agenticon.html"><i class="fas solid fa-plus-circle"></i> </a></li>
+
+      <li><a href="payment.html"> <i class="fas fa-exchange-alt"></i></a></li>
+      <li><a href="tag.html"><i class="fas fa-tags"></i></a></li>
+      <li><a href="download.html"><i class="fas fa-download"></i></a></li>
+      <li><a href="users.html"><i class="fas fa-users-cog"></i></a></li>
+      <li><a href="history.html"><i class="fas fa-history"></i></a></li>
+
+
+
+    </ul>
+    <div class="separator"></div>
+    <li><a href="../signin.html"><i class="fa-solid fa-right-from-bracket" title="Log out"></i></a></li>
+  </div>
+<div class="config-page">
+  <h3 class="text-center mb-4">System Configuration</h3>
+
+  <!-- Change Plans and Configure the System -->
+  <section class="mb-4">
+    <h5>Change Plans and Configure the System</h5>
+    <div class="mb-3">
+      <label for="planType" class="form-label">Select Plan</label>
+      <select id="planType" class="form-select">
+        <option>Basic</option>
+        <option>Premium</option>
+        <option>Enterprise</option>
+      </select>
+    </div>
+    <button class="btn btn-success w-100" id="updatePlanBtn">Update Plan</button>
+  </section>
+
+  <!-- Input Company Data and Set Up Exposes -->
+  <section class="mb-4">
+    <h5>Input Company Data</h5>
+    <div class="mb-3">
+      <label for="companyName" class="form-label">Company Name</label>
+      <input type="text" id="companyName" class="form-control" placeholder="Enter company name">
+    </div>
+    <div class="mb-3">
+      <label for="exposeDetails" class="form-label">Expose Details</label>
+      <textarea id="exposeDetails" class="form-control" rows="3" placeholder="Enter expose details"></textarea>
+    </div>
+    <button class="btn btn-success w-100" id="submitCompanyBtn">Submit Company Data</button>
+  </section>
+
+  <!-- Grant Agents Access to Notifications by Region -->
+  <section class="mb-4">
+    <h5>Grant Agents Access</h5>
+    <div class="mb-3">
+      <label for="region" class="form-label">Select Region</label>
+      <select id="region" class="form-select">
+        <option>North</option>
+        <option>South</option>
+        <option>East</option>
+        <option>West</option>
+      </select>
+    </div>
+    <button class="btn btn-success w-100" id="grantAccessBtn">Grant Access</button>
+  </section>
+
+  <!-- Mark Properties on Map -->
+  <section>
+    <h5>Mark Properties on Map</h5>
+    <div id="map"></div>
+    <div class="mt-3">
+      <label for="propertyColor" class="form-label">Property Color</label>
+      <input type="color" id="propertyColor" class="form-control form-control-color">
+    </div>
+    <div class="mb-3">
+      <label for="propertyCoordinates" class="form-label">Coordinates (Latitude, Longitude)</label>
+      <input type="text" id="propertyCoordinates" class="form-control" placeholder="e.g., 40.4168,-3.7038">
+    </div>
+    <button class="btn btn-success w-100" id="markPropertyBtn">Mark Property</button>
+  </section>
+</div>
+
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script>
+  // Initialize the map and set its view to Spain
+  const map = L.map('map').setView([40.4168, -3.7038], 6); // Coordinates of Madrid, Spain
+
+  // Add OpenStreetMap tiles
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+  }).addTo(map);
+
+  // Change Plans
+  document.getElementById('updatePlanBtn').addEventListener('click', () => {
+    const plan = document.getElementById('planType').value;
+    alert(`Plan updated to: ${plan}`);
+  });
+
+  // Input Company Data
+  document.getElementById('submitCompanyBtn').addEventListener('click', () => {
+    const company = document.getElementById('companyName').value;
+    const expose = document.getElementById('exposeDetails').value;
+
+    if (!company || !expose) {
+      alert('Please fill out all fields.');
+    } else {
+      alert(`Company Data Submitted:\nName: ${company}\nExpose: ${expose}`);
+    }
+  });
+
+  // Grant Agent Access
+  document.getElementById('grantAccessBtn').addEventListener('click', () => {
+    const region = document.getElementById('region').value;
+    alert(`Access granted to agents in the ${region} region.`);
+  });
+
+  // Mark Properties on Map
+  document.getElementById('markPropertyBtn').addEventListener('click', () => {
+    const color = document.getElementById('propertyColor').value;
+    const coordinates = document.getElementById('propertyCoordinates').value.split(',').map(Number);
+
+    if (coordinates.length !== 2 || isNaN(coordinates[0]) || isNaN(coordinates[1])) {
+      alert('Invalid coordinates. Use format: latitude,longitude (e.g., 40.4168,-3.7038)');
+      return;
+    }
+
+    // Add a marker with a colored circle at the specified location
+    L.circleMarker(coordinates, {
+      color: color,
+      radius: 8
+    }).addTo(map).bindPopup(`Property Marker: ${coordinates[0]}, ${coordinates[1]}`);
+  });
+</script>
+</body>
+</html>

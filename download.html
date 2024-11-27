@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>View Exposes and Track Sessions</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+
+  <style>
+    body {
+      background-color: #fff;
+      color: #fff;
+    }
+
+    .expose-page {
+      width: 90%;
+      margin: auto;
+      background-color: #33DB4A;
+      padding: 20px;
+      border-radius: 8px;
+      height: 102vh;
+    }
+
+    .table {
+      color: #fff;
+    }
+
+    .table th,
+    .table td {
+      vertical-align: middle;
+    }
+
+    .btn-delete {
+      background-color: #ff4d4d;
+      border: none;
+    }
+
+    .sidebar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 60px;
+      height: 102vh;
+      background: #33DB4A;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-top: 10px;
+      z-index: 1000;
+    }
+
+    .sidebar img {
+      width: 50px;
+      height: 30px;
+      margin-bottom: 20px;
+    }
+
+    .sidebar ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      width: 100%;
+    }
+
+    .sidebar li {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 60px;
+      cursor: pointer;
+    }
+
+    .sidebar i {
+      color: #fff;
+      font-size: 20px;
+      transition: color 0.3s ease;
+    }
+
+    .sidebar i:hover {
+      color: #f0d124;
+    }
+
+    .sidebar .separator {
+      width: 80%;
+      height: 1px;
+      background: #555;
+      margin: 20px 0;
+    }
+
+    .sidebar .logout {
+      margin-top: auto;
+      margin-bottom: 20px;
+    }
+    
+
+  </style>
+</head>
+
+<body>
+  <div class="sidebar">
+    <img src="../../assests/img/logo-removebg-preview.png" alt="Logo">
+    <ul>
+      <li><i class="fas fa-search" title="Search"></i></li>
+      <li><a href="agenticon.html"><i class="fas solid fa-plus-circle"></i> </a></li>
+
+      <li><a href="payment.html"> <i class="fas fa-exchange-alt"></i></a></li>
+      <li><a href="tag.html"><i class="fas fa-tags"></i></a></li>
+      <li><a href="download.html"><i class="fas fa-download"></i></a></li>
+      <li><a href="users.html"><i class="fas fa-users-cog"></i></a></li>
+      <li><a href="history.html"><i class="fas fa-history"></i></a></li>
+
+
+
+    </ul>
+    <div class="separator"></div>
+    <li><a href="../signin.html"><i class="fa-solid fa-right-from-bracket" title="Log out"></i></a></li>
+  </div>
+  <div class="expose-page">
+    <h3 class="text-center mb-4">Exposes and Session History</h3>
+
+    <!-- View Downloaded Exposes -->
+    <section class="mb-4">
+      <h5>Downloaded Exposes</h5>
+      <table class="table table-green table-hover">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Expose Name</th>
+            <th>Downloaded On</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="exposeTableBody">
+          <!-- Rows will be added dynamically -->
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Track Session Histories -->
+    <section>
+      <div class="session-price">
+        <h5>Session History</h5>
+        <table class="table table-dark table-hover">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Session Date</th>
+              <th>Activity</th>
+            </tr>
+          </thead>
+          <tbody id="sessionTableBody">
+            <!-- Rows will be added dynamically -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    // Mock data for downloaded exposes
+    const downloadedExposes = [
+      { name: "Expose 1", date: "2024-11-25" },
+      { name: "Expose 2", date: "2024-11-20" },
+      { name: "Expose 3", date: "2024-11-15" }
+    ];
+
+    // Mock data for session history
+    const sessionHistories = [
+      { date: "2024-11-25", activity: "Viewed Expose 1" },
+      { date: "2024-11-22", activity: "Downloaded Expose 2" },
+      { date: "2024-11-18", activity: "Marked Property on Map" }
+    ];
+
+    // Populate downloaded exposes table
+    const exposeTableBody = document.getElementById('exposeTableBody');
+    downloadedExposes.forEach((expose, index) => {
+      const row = document.createElement('tr');
+      row.innerHTML = `
+      <td>${index + 1}</td>
+      <td>${expose.name}</td>
+      <td>${expose.date}</td>
+      <td><button class="btn btn-sm btn-delete" onclick="deleteExpose(${index})">Delete</button></td>
+    `;
+      exposeTableBody.appendChild(row);
+    });
+
+    // Populate session history table
+    const sessionTableBody = document.getElementById('sessionTableBody');
+    sessionHistories.forEach((session, index) => {
+      const row = document.createElement('tr');
+      row.innerHTML = `
+      <td>${index + 1}</td>
+      <td>${session.date}</td>
+      <td>${session.activity}</td>
+    `;
+      sessionTableBody.appendChild(row);
+    });
+
+    // Function to delete an expose
+    function deleteExpose(index) {
+      if (confirm(`Are you sure you want to delete "${downloadedExposes[index].name}"?`)) {
+        downloadedExposes.splice(index, 1);
+        exposeTableBody.innerHTML = ''; // Clear table
+        downloadedExposes.forEach((expose, idx) => {
+          const row = document.createElement('tr');
+          row.innerHTML = `
+          <td>${idx + 1}</td>
+          <td>${expose.name}</td>
+          <td>${expose.date}</td>
+          <td><button class="btn btn-sm btn-delete" onclick="deleteExpose(${idx})">Delete</button></td>
+        `;
+          exposeTableBody.appendChild(row);
+        });
+      }
+    }
+  </script>
+</body>
+
+</html>
